@@ -1,0 +1,17 @@
+SELECT c.id as OrderId, p.customerId, p.payment, o.summa, o.diff
+FROM @customers c
+  inner join 
+@payments p ON p.customerId = c.id
+  outer apply
+(
+  SELECT o.id, o.summa, p.payment - oSum.ordersSumm diff 
+  FROM @orders o
+    outer apply
+  (
+    SELECT SUM(o1.summa) ordersSumm
+    FROM @orders o1
+    WHERE o1.customerId = c.id and
+        o1.id <= o.id
+  ) oSum
+  WHERE o.customerId = c.id
+) o

@@ -1,0 +1,23 @@
+create table Final (OrderId int, customerIdd int, summ numeric(18,2), balance numeric(18,2), diff numeric(18,2));
+
+
+declare @orderId int, @diff numeric(18,2), @summa numeric(18,2), @payment numeric(18,2), @CurCustomer int;
+set @orderId = 1;
+set @CurCustomer = (select min([id]) from [customers]);
+while @CurCustomer <= (select max([id]) from [customers])
+begin
+	set @payment = (select [payment] from [payments] where [customerId] = @CurCustomer);
+	set @diff = @payment
+	while @CurCustomer = (select [customerid] from [Orders] where [id] = @orderId)
+	begin		
+		set @summa = (select [summa] from [orders] where [id] = @orderId);
+		set @diff = @diff - @summa;
+		insert into [Final] values (@orderId, @CurCustomer, @summa, @payment, @diff);
+
+	set @orderId = @orderId + 1;
+	end;
+	set @Curcustomer = @Curcustomer + 1;
+end;
+
+
+ select * from [Final] where [diff] >= 0;
